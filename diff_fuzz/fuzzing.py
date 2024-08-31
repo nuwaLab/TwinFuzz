@@ -174,6 +174,8 @@ if __name__ == "__main__":
         
         img_list = []
         tmp_img = adv_filt[idx]
+        tmp_img = np.expand_dims(tmp_img, axis=0) # (28, 28, 1) => (1, 28, 28, 1)
+
         orig_img = tmp_img.copy()
         orig_norm = np.linalg.norm(orig_img) # L2 Norm
         img_list.append(tf.identity(tmp_img))
