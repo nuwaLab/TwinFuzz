@@ -9,7 +9,7 @@ from tensorflow import keras
 
 import consts
 sys.path.append("../")
-from attacks import deepfool
+from attacks import deepfool, mim_atk
 from seed_ops import filter_data
 
 os.environ["CUDA_VISIBLE_DEVICES"]="-1"
@@ -113,6 +113,13 @@ def mim_atk_loader(model, model_logits):
         if len(adv_all) % 1000 == 0:
             print("[INFO] Now Successful MIM Attack Num:", len(adv_all))
             if len(adv_all) == consts.ATTACK_SAMPLE_LIMIT: break
+    
+    print("[INFO] Success MIM Attack Num:", len(adv_all))
+    adv_all = tf.Variable(adv_all).numpy() # shape = (limit, 1, 28, 28)
+    adv_all = adv_all.reshape(adv_all.shape[0], 28, 28, 1)
+    np.savez(consts.ATTCK_SAMPLE_PATH_MIM, advs=adv_all)
+    return adv_all
+
 
 if __name__ == "__main__":
 
