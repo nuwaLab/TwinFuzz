@@ -215,9 +215,14 @@ if __name__ == "__main__":
 
                 # make sure perturbation is not too large
                 dist = np.linalg.norm(gen_img.numpy() - orig_img) / orig_norm
-                if fol > folMax and dist < 0.5:
+                print(dist)
+                if fol > folMax and dist < consts.PERTURBATION_LIMIT:
                     folMax = fol
                     img_list.append(tf.identity(gen_img))
                 
-                gen_index = np.argmax(resist_model(gen_img))[0]
+                gen_index = np.argmax(resist_model(gen_img)[0])
+                if gen_index != orig_index:
+                    total_sets.append((fol, gen_img.numpy()))
+
+                print('FOL:', fol, 'FOL max:', folMax)
                 
