@@ -48,7 +48,7 @@ def filter_data(path):
     filtered_idxs = np.where(tenen_values < threshold)[0]
     filtered_advs = imgs[filtered_idxs]
 
-    np.savez(consts.FILTER_SAMPLE_PATH, advf = filtered_advs)
+    np.savez(consts.FILTER_SAMPLE_PATH_BIM, advf = filtered_advs)
 
     return filtered_idxs
       
