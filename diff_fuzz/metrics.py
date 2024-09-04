@@ -2,6 +2,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
+import consts
+
 # FOL and entropy metrics
 
 # FOL for L_infinity Norm
@@ -47,6 +49,6 @@ def entropy(prob):
 # Information Bottleneck Metric
 def entro_ib(prob, orig_idx, target):
     one_hot = keras.utils.to_categorical([orig_idx], 10)
-    ib = keras.losses.categorical_crossentropy(one_hot, target) + entropy(prob)
+    ib = keras.losses.categorical_crossentropy(one_hot, target) + consts.BETA * entropy(prob)
 
     return ib

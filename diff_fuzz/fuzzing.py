@@ -8,6 +8,7 @@ import tensorflow as tf
 from tensorflow import keras
 
 import consts
+import metrics
 sys.path.append("../")
 from attacks import deepfool, mim_atk, bim_atk
 from seed_ops import filter_data
@@ -268,7 +269,8 @@ if __name__ == "__main__":
                     fol = tf.norm(grads+1e-20)
                     tape.watch(fol)
                     softmax = resist_model(gen_img)
-                    obj = fol - softmax[0][orig_index]
+                    #obj = fol - softmax[0][orig_index]
+                    obj = fol - metrics.entro_ib(softmax, orig_index, resist_model(gen_img))
                     dl_di = tape.gradient(obj, gen_img)  # minimize obj
 
                 del tape
