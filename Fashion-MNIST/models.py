@@ -35,3 +35,4 @@ def LeNet4(input_shape = (28,28,1)):
     x = keras.layers.Activation('softmax', name = 'prediction')(x)
 
     return keras.models.Model(input_tensor, x)
+

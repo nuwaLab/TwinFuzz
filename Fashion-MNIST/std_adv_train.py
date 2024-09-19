@@ -3,10 +3,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.callbacks import ModelCheckpoint
-from tqdm import tqdm
 
 # ==== Configuration ====
-# Change the name to your desired adv_trained model
 name = "LeNet4"
 
 
@@ -20,7 +18,9 @@ def fgsm_attack(model, inputs, labels, ep=0.3, isRand=True, randRate=1):
         inputs = np.random.uniform(-ep * randRate, ep * randRate, inputs.shape)
         inputs = np.clip(inputs, 0, 1)
 
+    # check the input data format.
     inputs = tf.Variable(inputs, dtype = tf.float32)
+
     with tf.GradientTape() as tape:
         loss = keras.losses.categorical_crossentropy(target, model(inputs))
         grads = tape.gradient(loss, inputs)
@@ -50,7 +50,9 @@ def pgd_attack(model, inputs, labels, step, ep=0.3, epochs=10, isRand=True, rand
     if isRand:
         inputs = inputs + np.random.uniform(-ep * randRate, ep * randRate)
         inputs = np.clip(inputs, 0, 1)
-  
+    
+    # Specify the datatype
+
     in_adv = tf.Variable(inputs, dtype = tf.float32)
     for i in range(epochs):
         with tf.GradientTape() as tape:
@@ -85,14 +87,13 @@ def data_format(x_train, x_test, y_train, y_test):
 
     return x_train, x_test, y_train, y_test
 
-
 # Use dataset train data to generate adv samples.
 def gen_adv_samples():
 
     os.environ["CUDA_VISIBLE_DEVICES"]="-1"
 
-    (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
-    model = keras.models.load_model(f"./{name}_MNIST.h5")
+    (x_train, y_train), (x_test, y_test) = keras.datasets.fashion_mnist.load_data()
+    model = keras.models.load_model(f"./{name}_Fashion_MNIST.h5")
 
     x_train, x_test, y_train, y_test = data_format(x_train, x_test, y_train, y_test)
 
@@ -110,7 +111,6 @@ def gen_adv_samples():
 
     return
 
-
 # Standard adversarial training using PGD and FGSM
 def adv_train():
     # Load GPU for adv training
@@ -123,7 +123,8 @@ def adv_train():
             print(len(gpus), "physical GPUs,", len(logical_gpus), "Logical GPUs")
         except RuntimeError as e:
             print(e)
-
+    # Chane the name to your corresponding trained adversarial samples
+    
     fgsm_advpath = f'FGSM_AdvTrain_{name}.npz'
     pgd_advpath = f'PGD_AdvTrain_{name}.npz'
     fgsm_advtest = f'FGSM_AdvTest_{name}.npz'
@@ -135,51 +136,57 @@ def adv_train():
         gen_adv_samples()
 
     os.environ["CUDA_VISIBLE_DEVICES"]="0,1,2,3"
-    (x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
+
+    # Load the dataset, and then use the data_format function to produce training set and testing set
+    (x_train, y_train), (x_test, y_test) = keras.datasets.fashion_mnist.load_data()
     x_train, x_test, y_train, y_test = data_format(x_train, x_test, y_train, y_test)
 
-    # Adv Train data
+    # Adv Train Data
     with np.load(fgsm_advpath) as f:
         fgsm_train, fgsm_labels = f['advs'], f['labels']
     with np.load(pgd_advpath) as f:
         pgd_train, pgd_labels = f['advs'], f['labels']
-    # Adv Test data
+    
+    # Adv Test Data
     with np.load(fgsm_advtest) as f:
         fgsm_test, fgsm_test_labels = f['test'], f['labels']
     with np.load(pgd_advtest) as f:
         pgd_test, pgd_test_labels = f['test'], f['labels']
 
+    # Adv Train Data
     adv_train = np.concatenate((fgsm_train, pgd_train))
     adv_labels = np.concatenate((fgsm_labels, pgd_labels))
+
+    # Adv Test Data
     adv_test = np.concatenate((fgsm_test, pgd_test))
     adv_test_labels = np.concatenate((fgsm_test_labels, pgd_test_labels))
 
     # incremental adv train, adv_num / clean_num = 20%
     # sampleNum = [600*i for i in [1, 2, 4, 8, 12, 16, 20]]
     sampleNum = [600*i for i in [20]]
+    with tf.device('/GPU:0'):
+        for n in sampleNum:
+            model_ckpoint = f"./checkpoint/{name}_Fashion_MNIST_Adv_{n}.h5"
+            ori_model = keras.models.load_model(f"./{name}_Fashion_MNIST.h5")
+            
+            # Load the checkpoint
+            checkpoint = ModelCheckpoint(filepath=model_ckpoint, monitor='val_accuracy', verbose=1, save_best_only=True)
+            callbacks = [checkpoint]
 
-    for n in tqdm(sampleNum, desc = "Conducting Adversarial Training") :
-        print(f"\n[INFO] Starting adv training with {n} adv samples...")
-        model_ckpoint = f"./checkpoint/{name}_MNIST_Adv_{n}.h5"
-        ori_model = keras.models.load_model(f"./{name}_MNIST.h5")
+            indexes = np.random.choice(len(adv_train), n)
+            selectAdv = adv_train[indexes]
+            selectLabel = adv_labels[indexes]
 
-        checkpoint = ModelCheckpoint(filepath=model_ckpoint, monitor='val_accuracy', verbose=0, save_best_only=True)
-        callbacks = [checkpoint]
+            x_train_adv = np.concatenate((x_train, selectAdv), axis=0)
+            y_train_adv = np.concatenate((y_train, selectLabel), axis=0)
 
-        indexes = np.random.choice(len(adv_train), n)
-        selectAdv = adv_train[indexes]
-        selectLabel = adv_labels[indexes]
+            # Now retraining
+            ori_model.fit(x_train_adv, y_train_adv, epochs=10, batch_size=64, verbose=1, callbacks=callbacks, validation_data=(adv_test, adv_test_labels))
 
-        x_train_adv = np.concatenate((x_train, selectAdv), axis=0)
-        y_train_adv = np.concatenate((y_train, selectLabel), axis=0)
+            best_resist_model = keras.models.load_model(model_ckpoint)
 
-        # Now retraining
-        ori_model.fit(x_train_adv, y_train_adv, epochs=10, batch_size=64, verbose=1, callbacks=callbacks, validation_data=(adv_test, adv_test_labels))
-
-        best_resist_model = keras.models.load_model(model_ckpoint)
-
-        _, acc_clean = best_resist_model.evaluate(x_test, y_test, verbose=0)
-        print(f"[INFO] Round {n/600} Adv Train, Clean ACC:", acc_clean)
+            _, acc_clean = best_resist_model.evaluate(x_test, y_test, verbose=0)
+            print(f"[INFO] Round {n/600} Adv Train, Clean ACC:", acc_clean)
     
     print("[INFO] After Adv Training, Clean ACC:", acc_clean)
 
