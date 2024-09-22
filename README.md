@@ -10,14 +10,12 @@ pip3 install -r requirements.txt
 ```
 
 The following works are used for comparison
-* 📑 *RobOT: Robustness-Oriented Testing for Deep Learning Systems*
-- 🧑‍💻Code: https://github.com/Testing4AI/RobOT
+1. 📑 *RobOT: Robustness-Oriented Testing for Deep Learning Systems*
+   - 🧑‍💻Code: https://github.com/Testing4AI/RobOT
 
-- 📑 *DLFuzz: differential fuzzing testing of deep learning systems*
+2. 📑 *DLFuzz: differential fuzzing testing of deep learning systems*
+   - 🧑‍💻Code: https://github.com/turned2670/DLFuzz
 
-&nbsp; 🧑‍💻Code: https://github.com/turned2670/DLFuzz
-
-- 📑 *DeepXplore: automated whitebox testing of deep learning systems*
-
-&nbsp; 🧑‍💻Code: https://github.com/peikexin9/deepxplore
+3. 📑 *DeepXplore: automated whitebox testing of deep learning systems*
+   - 🧑‍💻Code: https://github.com/peikexin9/deepxplore
 
