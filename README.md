@@ -1,4 +1,7 @@
-# DiffRobOT
+# DiffEntro
+
+DiffEntro is an entropy-guided differential testing framework that bridges the work of the AI ​​and SE communities and enhances the robust generalization of defensible models.
+
 
 ## 0x01 Prerequisite
 The project is developed based on Python 3.7 and Tensorflow 2.2.0, conda is recommended for enviroment isolation.
