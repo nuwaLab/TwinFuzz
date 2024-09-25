@@ -2,3 +2,4 @@ tensorflow-gpu==2.2.0
 protobuf==3.20.0
 numpy==1.21.6
 opencv-python==4.10.0.84
+tqdm==4.66.5
