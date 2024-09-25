@@ -3,7 +3,7 @@
 DiffEntro is an entropy-guided differential testing framework that bridges the work of the AI ​​and SE communities and enhances the robust generalization of defensible models.
 
 ## 0x01 Prerequisite
-The project is developed based on Python 3.7 and Tensorflow 2.2.0, conda is recommended for enviroment isolation.
+The project is developed based on Python 3.7 and Tensorflow 2.6.0, conda is recommended for enviroment isolation.
 
 ```bash
 conda create -n py37-tf2-gpu python=3.7
@@ -19,13 +19,13 @@ Take training LeNet4 under MNIST as an example.
 cd MNIST
 python train_models.py -m lenet4
 ```
-For larger datasets, take PACS as an example(pretrained weight required):
+Then the model is saved as *LeNet4_MNIST.h5*, following the naming rule as *{model_name}_{dataset}.h5*.
+
+For PACS dataset, pretrained models are required.
 ```bash
 cd PACS
 python models.py -m pretrain_Resnet50
 ```
-
-Then the model is saved as *LeNet4_MNIST.h5*, following the naming rule as *{model_name}_{dataset}.h5*.
 
 Next, the pre adversarial trained model for differential testing should be obtained.
 ```bash
