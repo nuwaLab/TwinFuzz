@@ -2,7 +2,6 @@
 
 DiffEntro is an entropy-guided differential testing framework that bridges the work of the AI ​​and SE communities and enhances the robust generalization of defensible models.
 
-
 ## 0x01 Prerequisite
 The project is developed based on Python 3.7 and Tensorflow 2.2.0, conda is recommended for enviroment isolation.
 
@@ -23,7 +22,6 @@ The following works are used for comparison
    - 🧑‍💻Code: https://github.com/peikexin9/deepxplore
 
 ## 0x02 Train Models
-
 Enter the folder of the corresponding dataset to train the models to be tested.
 
 Take training LeNet4 under MNIST as an example.
@@ -38,6 +36,14 @@ Next, we obtain the pre adversarial trained model for differential testing.
 mkdir checkpoint
 python std_adv_train.py
 ```
-*LeNet4_MNIST_Adv_12000.h5* in the checkpoint folder is our pre adversarial trained model, following the naming rule as *{model_name}_{dataset}\_Adv\_{advSamples}.h5*.
+*LeNet4_MNIST_Adv_12000.h5* in the checkpoint folder is our pre adversarial trained model, following the naming rule as *{model_name}_{dataset}\_Adv\_{advSample}.h5*.
 
 ## 0x03 Start Testing
+Before we start testing, the config.ini should be configured.
+```ini
+[model]
+name = LeNet4
+dataset = MNIST
+advSample = 12000
+```
+
