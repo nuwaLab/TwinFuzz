@@ -31,12 +31,12 @@ python train_models.py -m lenet4
 ```
 Then the model is saved as *LeNet4_MNIST.h5*, following the naming rule as *{model_name}_{dataset}.h5*.
 
-Next, we obtain the pre adversarial trained model for differential testing.
+Next, the pre adversarial trained model for differential testing should be obtained.
 ```bash
 mkdir checkpoint
 python std_adv_train.py
 ```
-*LeNet4_MNIST_Adv_12000.h5* in the checkpoint folder is our pre adversarial trained model, following the naming rule as *{model_name}_{dataset}\_Adv\_{advSample}.h5*.
+*LeNet4_MNIST_Adv_12000.h5* in the checkpoint folder is the pre adversarial trained model, following the naming rule as *{model_name}_{dataset}\_Adv\_{advSample}.h5*.
 
 ## 0x03 Start Testing
 Before we start testing, the config.ini should be configured.
