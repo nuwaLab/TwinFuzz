@@ -38,6 +38,6 @@ Next, we obtain the pre adversarial trained model for differential testing.
 mkdir checkpoint
 python std_adv_train.py
 ```
-*LeNet4_MNIST_Adv_12000.h5* in the checkpoint folder is our pre adversarial trained model, following the naming rule as *{model_name}_{dataset}_Adv_{advSamples}.h5*.
+*LeNet4_MNIST_Adv_12000.h5* in the checkpoint folder is our pre adversarial trained model, following the naming rule as *{model_name}_{dataset}\_Adv\_{advSamples}.h5*.
 
 ## 0x03 Start Testing
