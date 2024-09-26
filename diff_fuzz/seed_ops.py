@@ -16,17 +16,6 @@ def tenengrad(img):
 
     return tenengrad
 
-# Normalization
-# def normalize(tenens):
-#     min = np.min(tenens)
-#     max = np.max(tenens)
-
-#     if max == min:
-#         return np.zeros_like(tenens)
-#     normed = (tenens - min) / (max - min)
-
-#     return normed
-
 # Filter images by processing npz data
 def filter_data(path):
     with np.load(path) as f:

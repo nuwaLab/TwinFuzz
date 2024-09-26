@@ -45,8 +45,9 @@ vim config.ini
 name = LeNet4
 dataset = MNIST
 advSample = 12000
+duration = 300
 ```
-Now you are all set to start testing.
+*duration* represents the testing time. Now you are all set to start testing.
 ```bash
 python fuzzing.py
 ```

@@ -29,8 +29,9 @@ def read_conf():
     name = conf.get('model', 'name')
     dataset = conf.get('model', 'dataset')
     adv_sample_num = conf.get('model', 'advSample')
+    test_duration = conf.get('model', 'duration')
 
-    return name, dataset, adv_sample_num
+    return name, dataset, adv_sample_num, test_duration
 
 # Find same predictions
 def find_same(preds1, preds2):
@@ -47,7 +48,7 @@ def find_same(preds1, preds2):
 if __name__ == "__main__":
 
     # Load models for inference
-    name, dataset, adv_sample_num = read_conf()
+    name, dataset, adv_sample_num, test_duration = read_conf()
     resist_model = keras.models.load_model(f"../{dataset}/checkpoint/{name}_{dataset}_Adv_{adv_sample_num}.h5")
     vulner_model = keras.models.load_model(f"../{dataset}/{name}_{dataset}.h5")
 
@@ -76,8 +77,6 @@ if __name__ == "__main__":
     vulner_pred_idxs = np.argmax(vulner_model(adv_filt), axis=1)
 
     # print(filter_idxs)
-    # print(resist_pred_idxs)
-    # print(vulner_pred_idxs)
 
     # Find same predicitons
     same_preds = find_same(resist_pred_idxs, vulner_pred_idxs)
@@ -92,7 +91,7 @@ if __name__ == "__main__":
     for idx, pred in same_preds:
         delta_t = time.time() - start
         # Limit time
-        if delta_t > 300:
+        if delta_t > int(test_duration):
             break
         
         img_list = []
@@ -148,5 +147,8 @@ if __name__ == "__main__":
                 if gen_index != orig_index:
                     total_sets.append((fol, gen_img.numpy()))
 
-                print('FOL:', fol, 'FOL max:', folMax)
-                
+                # print('FOL:', fol, 'FOL max:', folMax)
+    
+    cases = np.array([item[1] for item in total_sets])
+    fols = np.array([item[0] for item in total_sets])
+    np.savez(f'{name}_{dataset}_Fuzzed.npz', cases=cases, fols=fols)
