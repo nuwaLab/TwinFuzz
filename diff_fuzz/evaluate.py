@@ -37,8 +37,8 @@ elif not os.path.exists(consts.BIM_EVAL_PATH):
 with np.load(consts.DF_EVAL_PATH) as df:
     df_test, df_labels = df['eval'], df['labels']
 
-vulner_eval_idxs = np.argmax(vulner_model(df_test), axis=1)
-same_preds = fuzzing.find_same(vulner_eval_idxs, df_labels)
+resist_eval_idxs = np.argmax(resist_model(df_test), axis=1)
+same_preds = fuzzing.find_same(resist_eval_idxs, df_labels)
 rob_acc = len(same_preds) / len(df_test)
 
 print(rob_acc)
