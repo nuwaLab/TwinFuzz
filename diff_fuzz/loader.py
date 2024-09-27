@@ -120,7 +120,7 @@ def mim_eval_loader(model):
         # Predict the adv label after the adversarial attack
         adv_label = np.argmax(normal_model.predict(adv_image))
         # Output results
-        print(f"Original Label: {orig_label}, Adversarial Label: {adv_label}, Total Perturbation (L2 norm): {tot_pert}")
+        # print(f"Original Label: {orig_label}, Adversarial Label: {adv_label}, Total Perturbation (L2 norm): {tot_pert}")
         # print(f"Total Iterations: {10}")  # The number of iterations is specified by `nb_iter`
         atk_numbers = atk_numbers + 1
         print(atk_numbers)
@@ -222,9 +222,7 @@ def bim_eval_loader(model):
         adv_image = tf.squeeze(adv_image, axis =-1) 
 
         # Output results
-        print(f"Original Label: {orig_label}")
-        print(f"Adversarial Label: {adv_label}")
-        print(f"Total Perturbation (L2 norm): {tot_pert}")
+        # print(f"Original Label: {orig_label}, Adversarial Label: {adv_label}, Total Perturbation (L2 norm): {tot_pert}")
         # print(f"Total Iterations: {10}")  # The number of iterations is specified by `nb_iter`
         atk_numbers = atk_numbers + 1
         print(atk_numbers)
