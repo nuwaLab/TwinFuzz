@@ -15,6 +15,6 @@ ATTCK_SAMPLE_PATH_MIM = 'MIM_Atks.npz'
 FILTER_SAMPLE_PATH_BIM = 'BIM_Atk_Filter.npz'
 ATTCK_SAMPLE_PATH_BIM = 'BIM_Atks.npz'
 
-BIM_EVAL_PATH = 'MIM_Eval.npz'
-MIM_EVAL_PATH = 'BIM_Eval.npz'
+BIM_EVAL_PATH = 'BIM_Eval.npz'
+MIM_EVAL_PATH = 'MIM_Eval.npz'
 DF_EVAL_PATH = 'DeepFool_Eval.npz'

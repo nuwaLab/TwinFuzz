@@ -6,8 +6,8 @@ from tensorflow import keras
 
 import consts
 import fuzzing
+import loader
 sys.path.append("../")
-from attacks import deepfool, mim_atk, bim_atk
 
 os.environ["CUDA_VISIBLE_DEVICES"]="0"
 gpus = tf.config.experimental.list_physical_devices("GPU")
@@ -25,28 +25,20 @@ vulner_model = keras.models.load_model(f"../{dataset}/{name}_{dataset}.h5")
 # Model after testing
 enhance_model = keras.models.load_model(f"../{dataset}/{name}_{dataset}_DiffEntro.h5")
 
-# Load eval inputs for Robustness Evaluation
-eval_files = [consts.DF_EVAL_PATH, consts.MIM_EVAL_PATH, consts.BIM_EVAL_PATH]
-for file in eval_files:
-    if os.path.exists(file):
-        pass
-    else:
-        (_, _), (x_test, y_test) = keras.datasets.mnist.load_data()
-        
-        eval_all = []
-        for img in x_test:
-            _, _, orig_label, adv_label, adv_img = deepfool.deepfool(img, vulner_model)
-            if adv_label != orig_label:
-                eval_all.append(adv_img)
-            
-        print("[INFO] Success DeepFool Attack Num:", len(eval_all))
-        eval_all = tf.Variable(eval_all).numpy()
-        eval_all = eval_all.reshape(eval_all.shape[0], 28, 28, 1)
-        np.savez(consts.DF_EVAL_PATH, evals=eval_all)
+# Prepare eval inputs for Robustness Evaluation
+if not os.path.exists(consts.DF_EVAL_PATH):
+    loader.df_eval_loader(vulner_model)
+elif not os.path.exists(consts.MIM_EVAL_PATH):
+    loader.mim_eval_loader(vulner_model)
+elif not os.path.exists(consts.BIM_EVAL_PATH):
+    loader.bim_eval_loader(vulner_model)
 
-sNums = [600*i for i in [8, 12, 16, 20]]
+# Load eval inputs for Robustness Evaluation, DeepFool or others
+with np.load(consts.DF_EVAL_PATH) as df:
+    df_test, df_labels = df['eval'], df['labels']
 
-for num in sNums:
-    pass
+vulner_eval_idxs = np.argmax(vulner_model(df_test), axis=1)
+same_preds = fuzzing.find_same(vulner_eval_idxs, df_labels)
+rob_acc = len(same_preds) / len(df_test)
 
-# Data selection
+print(rob_acc)
