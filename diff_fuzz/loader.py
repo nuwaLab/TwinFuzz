@@ -192,6 +192,7 @@ def bim_atk_loader(model):
 def bim_eval_loader(model):
     (_, _), (x_test, y_test) = keras.datasets.mnist.load_data()
     eval_all = []
+    labels = []
     atk_numbers=0
     for imgs, label in zip(x_test, y_test):
         
@@ -229,12 +230,13 @@ def bim_eval_loader(model):
         print(atk_numbers)
         if adv_label != orig_label:
             eval_all.append(adv_image)
+            labels.append(orig_label)
         if len(eval_all) % 1000 == 0:
             print("[INFO] Now Successful MIM Evaluation Num:", len(eval_all))
     
     print("[INFO] Success MIM Evalution Num:", len(eval_all))
     eval_all = tf.Variable(eval_all).numpy() # shape = (limit, 1, 28, 28)
     eval_all = eval_all.reshape(eval_all.shape[0], 28, 28, 1)
-    np.savez(consts.BIM_EVAL_PATH, eval=eval_all)
+    np.savez(consts.BIM_EVAL_PATH, eval=eval_all, labels=labels)
 
-    return eval_all
+    return eval_all, labels
