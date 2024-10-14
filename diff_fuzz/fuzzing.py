@@ -122,7 +122,7 @@ if __name__ == "__main__":
                     tape.watch(fol)
                     softmax = resist_model(gen_img)
                     #obj = fol - softmax[0][orig_index]
-                    obj = fol - metrics.entro_ib(softmax, orig_index, resist_model(gen_img))
+                    obj = fol + metrics.entro_ib(softmax, orig_index, resist_model(gen_img))
                     dl_di = tape.gradient(obj, gen_img)  # minimize obj
 
                 del tape
