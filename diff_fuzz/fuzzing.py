@@ -110,7 +110,6 @@ if __name__ == "__main__":
 
         folMax = 0
         epoch = 0
-        total_sets = []
         while len(img_list) > 0:
             gen_img = img_list.pop(0)
             for _ in range(2):
@@ -145,10 +144,10 @@ if __name__ == "__main__":
                 
                 gen_index = np.argmax(resist_model(gen_img)[0])
                 if gen_index != orig_index:
-                    total_sets.append((fol, gen_img.numpy()))
+                    sample_set.append((fol, gen_img.numpy()))
 
                 # print('FOL:', fol, 'FOL max:', folMax)
     
-    cases = np.array([item[1] for item in total_sets])
-    fols = np.array([item[0] for item in total_sets])
+    cases = np.array([item[1] for item in sample_set])
+    fols = np.array([item[0] for item in sample_set])
     np.savez(f'{name}_{dataset}_Fuzzed.npz', cases=cases, fols=fols)
